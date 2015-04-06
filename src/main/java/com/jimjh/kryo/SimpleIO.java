@@ -25,6 +25,11 @@ public class SimpleIO {
    * @param args command-line args, ignored for now
    */
   public static void main(String[] args) throws IOException {
+    ioToFile();
+    ioToArray();
+  }
+
+  private static void ioToFile() throws IOException {
     POJO object = POJO.create();
     Kryo kryo = new Kryo();
 
@@ -39,6 +44,24 @@ public class SimpleIO {
     try (Input input = new Input(new FileInputStream(file))) {
       POJO read = kryo.readObject(input, POJO.class);
       LOGGER.info("Read object from {}", file);
+    }
+  }
+
+  private static void ioToArray() throws IOException {
+    POJO object = POJO.create();
+    Kryo kryo = new Kryo();
+
+    byte[] buffer;
+
+    try (Output output = new Output(1024 * 1024)) {
+      kryo.writeObject(output, object);
+      buffer = output.toBytes();
+      LOGGER.info("Wrote object #{}", System.identityHashCode(object));
+    }
+
+    try (Input input = new Input(buffer)) {
+      POJO read = kryo.readObject(input, POJO.class);
+      LOGGER.info("Read object #{}", System.identityHashCode(read));
     }
   }
 }
