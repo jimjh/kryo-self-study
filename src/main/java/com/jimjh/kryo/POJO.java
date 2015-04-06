@@ -1,5 +1,8 @@
 package com.jimjh.kryo;
 
+import com.google.common.base.MoreObjects;
+
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -19,6 +22,7 @@ public class POJO {
 
   public POJO() {
     // unfortunately, Kryo needs a no-arg constructor, which means that final attributes are awkward.
+    // fortunately, it uses reflection, so the private, final attributes don't need setters
     this(null, null, 0, 0, null);
   }
 
@@ -28,6 +32,29 @@ public class POJO {
     this.i1 = i1;
     this.l1 = l1;
     this.child = child;
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+                      .add("s1", s1)
+                      .add("s2", s2)
+                      .add("i1", i1)
+                      .add("l1", l1)
+                      .add("child", child)
+                      .toString();
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (null == other) return false;
+    if (!(other instanceof POJO)) return false;
+    POJO o = (POJO) other;
+    return s1.equals(o.s1) &&
+           s2.equals(o.s2) &&
+           i1 == o.i1 &&
+           l1 == o.l1 &&
+           Objects.equals(child, o.child);
   }
 
   public static POJO create() {
